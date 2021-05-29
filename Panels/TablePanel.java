@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.BorderLayout;
 
+import DataStructures.*;
+
 public class TablePanel extends JPanel {
 
     private String[][] content = {};
@@ -22,6 +24,10 @@ public class TablePanel extends JPanel {
         scrollPane = new JScrollPane(table);
 
         this.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public void setContent(Graph graph) {
+
     }
 
     public void updatePanel() {

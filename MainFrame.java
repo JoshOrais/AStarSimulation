@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.Dimension;
-import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ChangeListener;
@@ -8,25 +7,21 @@ import javax.swing.event.ChangeEvent;
 import java.io.File;
 
 import Panels.*;
+import DataStructures.*;
 
 public class MainFrame{
 
     private JFrame frame;
-    private JPanel algoPanel;
-    private JPanel tablePanel;
-    private JPanel graphPanel;
-    private JButton fileInput;
-    private JButton rndInput;
+    private AlgoPanel algoPanel;
+    private TablePanel tablePanel;
+    private GraphPanel graphPanel;
+    // private ControlPanel controlPanel;
+    private JButton fileInput, rndInput, start, pause, reset, result, exit;
     private JSlider slider;
-    private JButton start;
-    private JButton pause;
-    private JButton reset;
-    private JButton result;
-    private JButton exit;
 
     private File inputFile;
     private int sliderSpeed;
-    // private Graph inputGraph;
+    private Graph inputGraph;
 
     public MainFrame() {
         System.out.println("Hello World");
@@ -108,11 +103,13 @@ public class MainFrame{
 
                         System.out.println("Selected File is: " + inputFile.getName());
 
-                        // GraphReader graphReader = new GraphReader(inputFile);
-                        // inputGraph = graphReader.getGraph();
-                        
-                        // tablePanel.updatePanel(inputGraph);
-                        // centerPanel.update(inputGraph);
+                        GraphReader graphReader = new GraphReader(inputFile);
+                        inputGraph = graphReader.getGraph();
+
+                        tablePanel.setContent(inputGraph);
+                        graphPanel.setContent(inputGraph);
+
+                        System.out.println("Contents set for Table and Graph");
                     } 
                 }
 
@@ -120,6 +117,16 @@ public class MainFrame{
                     System.out.println("Generate Random");
 
                     componentEnabler(true, true, true, true, false, false, false);
+
+                    RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator();
+                    inputGraph = randomGraphGenerator.generate();
+
+                    System.out.println("Random Graph Generated!");
+
+                    tablePanel.setContent(inputGraph);
+                    graphPanel.setContent(inputGraph);
+
+                    System.out.println("Contents set for Table and Graph");
                 }
                 
                 if (e.getSource() == start){
