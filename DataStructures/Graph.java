@@ -216,4 +216,26 @@ public class Graph {
         }
         return status;
     }
+
+    public void dislay() {
+        System.out.println("\nVERTICES: ");
+        for(int i=0; i<vertexArray.length; i++){
+            System.out.print("[" + vertexArray[i].name + ":" + vertexArray[i].weight + "] ");
+        }
+        
+        System.out.println("\n\nMATRIX: ");
+        System.out.print("Vertex");
+        for(int i=0; i<vertexArray.length; i++){
+            System.out.print("\t" + vertexArray[i].name);
+        }
+        System.out.println();
+        for(int i=0; i<vertexArray.length; i++){
+            System.out.print(vertexArray[i].name);
+            for(int j=0; j<vertexArray.length; j++){
+                System.out.print("\t" + matrix[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println("");
+    }
 }

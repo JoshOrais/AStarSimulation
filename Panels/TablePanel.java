@@ -1,7 +1,10 @@
 package Panels;
 
 import java.awt.Dimension;
-import javax.swing.*;
+import javax.swing.*; // specify all the classes to be imported
+import javax.swing.table.TableModel;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Color;
 import java.awt.BorderLayout;
 
@@ -10,7 +13,8 @@ import DataStructures.*;
 public class TablePanel extends JPanel {
 
     private String[][] content = {};
-    private String[] header = {"Vertex", "G(n)", "H(n)", "F(n)", "Prev"};
+    private String[] header = {"Vertex", "Cost of G", "Cost of H", "Cost of F", "Parent"};
+    private TableModel tableModel;
     private JTable table;
     private JScrollPane scrollPane;
 
@@ -20,18 +24,32 @@ public class TablePanel extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-        table = new JTable(content, header);
+        tableModel = new DefaultTableModel(content, header);
+        table = new JTable(tableModel);
         scrollPane = new JScrollPane(table);
 
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
     public void setContent(Graph graph) {
+        Vertex[] vertexArray = graph.getVertexArray();
+        //find heuristic
 
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        String[] rowData = new String[5];
+
+        for (int i=0; i<vertexArray.length; i++) {
+            rowData[0] = vertexArray[i].name;
+            rowData[1] = "infinity";
+            rowData[2] = "-";
+            rowData[3] = "-";
+            rowData[4] = "-";
+            model.addRow(rowData);
+        }
     }
 
     public void updatePanel() {
-
+        table.setValueAt("hello", 2, 3);
     }
 
     public void clearPanel() {

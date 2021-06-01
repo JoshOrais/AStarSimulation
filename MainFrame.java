@@ -21,10 +21,10 @@ public class MainFrame{
 
     private File inputFile;
     private int sliderSpeed;
-    private Graph inputGraph;
+    private Graph graph;
 
     public MainFrame() {
-        System.out.println("Hello World");
+        System.out.println("START");
 
         Dimension frameDimension = new Dimension(1350, 750);
         Dimension leftPanelDimension = new Dimension(350, 375);
@@ -104,10 +104,10 @@ public class MainFrame{
                         System.out.println("Selected File is: " + inputFile.getName());
 
                         GraphReader graphReader = new GraphReader(inputFile);
-                        inputGraph = graphReader.getGraph();
+                        graph = graphReader.getGraph();
 
-                        tablePanel.setContent(inputGraph);
-                        graphPanel.setContent(inputGraph);
+                        tablePanel.setContent(graph);
+                        graphPanel.setContent(graph);
 
                         System.out.println("Contents set for Table and Graph");
                     } 
@@ -119,12 +119,12 @@ public class MainFrame{
                     componentEnabler(true, true, true, true, false, false, false);
 
                     RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator();
-                    inputGraph = randomGraphGenerator.generate();
+                    graph = randomGraphGenerator.generate();
 
                     System.out.println("Random Graph Generated!");
 
-                    tablePanel.setContent(inputGraph);
-                    graphPanel.setContent(inputGraph);
+                    tablePanel.setContent(graph);
+                    graphPanel.setContent(graph);
 
                     System.out.println("Contents set for Table and Graph");
                 }
