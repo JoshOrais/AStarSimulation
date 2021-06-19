@@ -42,9 +42,16 @@ public class TablePanel extends JPanel {
             rowData[0] = vertexArray[i].name;
             rowData[1] = "infinity";
             rowData[2] = "-";
-            rowData[3] = "-";
+            rowData[3] = "infinity";
             rowData[4] = "-";
             model.addRow(rowData);
+        }
+    }
+
+    public void setHeuristic(float[] heuristic) {
+        for (int i=0; i<table.getRowCount(); i++) {
+            // System.out.println(i + " " + table.getRowCount());
+            table.setValueAt(String.valueOf(heuristic[i]), i, 2);
         }
     }
 

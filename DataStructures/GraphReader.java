@@ -26,17 +26,17 @@ public class GraphReader {
                 else {
                     if (flag == 0) {
                         String[] subString = line.split(":");
-                        Vertex vertex = new Vertex(subString[0], (Double.valueOf(subString[1])));
+                        Vertex vertex = new Vertex(subString[0], (Float.valueOf(subString[1])));
                         graph.insertVertex(vertex);
 
-                        System.out.println("VERTEX: " + subString[0] + " WEIGHT: " + subString[1]);
+                        // System.out.println("VERTEX: " + subString[0] + " WEIGHT: " + subString[1]);
                     }
                     else if (flag == 1) {
                         String[] subString1 = line.split(":");
                         String[] subString2 = subString1[0].split(",");
-                        graph.insertEdge(subString2[0], subString2[1], (Double.valueOf(subString1[1])));
+                        graph.insertEdge(subString2[0], subString2[1], (Float.valueOf(subString1[1])));
 
-                        System.out.println("VERTEX 1: " + subString2[0] + " VERTEX 2: " + subString2[1] + " WEIGHT: " + subString1[1]);
+                        // System.out.println("VERTEX 1: " + subString2[0] + " VERTEX 2: " + subString2[1] + " WEIGHT: " + subString1[1]);
                     }
                 }  
             }
@@ -45,7 +45,7 @@ public class GraphReader {
             e.printStackTrace();
         }
 
-        graph.dislay();
+        // graph.display();
     }
 
     public Graph getGraph() {

@@ -3,7 +3,7 @@ package DataStructures;
 public class Graph {
 
     private Vertex[] vertexArray = new Vertex[0];
-    private double[][] matrix = new double[0][0];
+    private float[][] matrix = new float[0][0];
     private int vertexNum = 0;
     private int edgeNum = 0;
 
@@ -18,7 +18,7 @@ public class Graph {
         }
         else {
             Vertex[] tempArray = new Vertex[length+1];
-            double[][] tempMatrix = new double[length+1][length+1];
+            float[][] tempMatrix = new float[length+1][length+1];
 
             for(int i=0; i<length; i++){
                 tempArray[i] = vertexArray[i];
@@ -55,7 +55,7 @@ public class Graph {
             }
 
             Vertex[] tempArray = new Vertex[length-1];
-            double[][] tempMatrix = new double[length-1][length-1];
+            float[][] tempMatrix = new float[length-1][length-1];
 
             for(int i=0; i<length; i++){
                 if(i<pos){
@@ -90,7 +90,7 @@ public class Graph {
         }
     }
 
-    public void insertEdge(String vertexNameA, String vertexNameB, double weight) {
+    public void insertEdge(String vertexNameA, String vertexNameB, float weight) {
         if(!exists(vertexNameA)){
             System.out.println("Vertex " + vertexNameA + " does not exist!!!");
         }
@@ -162,8 +162,8 @@ public class Graph {
         return edgeNum;
     }
 
-    public Vertex[] getAdjacentVertices(String vertexName) {
-        Vertex[] neighborArray = new Vertex[0];
+    public String[] getAdjacentVertices(String vertexName) {
+        String[] neighborArray = new String[0];
 
         if(!exists(vertexName)){
             System.out.println("Vertex " + vertexName + " does not exist!!!");
@@ -179,12 +179,12 @@ public class Graph {
 
             for(int i=0; i<vertexArray.length; i++){
                 if(matrix[pos][i] > 0){
-                    Vertex[] tempArray = new Vertex[neighborArray.length + 1];
+                    String[] tempArray = new String[neighborArray.length + 1];
                     for(int j=0; j<neighborArray.length; j++){
                         tempArray[j] = neighborArray[j];
                     }
                     
-                    tempArray[neighborArray.length] = vertexArray[i];
+                    tempArray[neighborArray.length] = vertexArray[i].name;
                     neighborArray = tempArray;
                 }
             }
@@ -198,11 +198,82 @@ public class Graph {
         }   
     }
 
+    public boolean isAdjacent(String vertexNameA, String vertexNameB) {
+        if(!exists(vertexNameA)){
+            System.out.println("Vertex 1 does not exist!!!");
+            return false;
+        }
+        if(!exists(vertexNameB)){
+            System.out.println("Vertex 2 does not exist!!!");
+            return false;
+        }
+        else{
+            boolean status = false;
+            int posA = -1;
+            int posB = -1;
+
+            for(int i=0; i<vertexArray.length; i++){
+                if(vertexArray[i].name.equals(vertexNameA)){
+                    posA = i;
+                }
+            }
+            for(int i=0; i<vertexArray.length; i++){
+                if(vertexArray[i].name.equals(vertexNameB)){
+                    posB = i;
+                }
+            }
+
+            if (matrix[posA][posB] > 0) {
+                status = true;
+            }
+
+            return status;
+        }
+    }
+
+    public float getEdgeWeight(String vertexNameA, String vertexNameB) {
+        int posA = -1;
+        int posB = -1;
+
+        if(!exists(vertexNameA)){
+            System.out.println("Vertex " + vertexNameA + " does not exist!!!");
+        }
+        if(!exists(vertexNameB)){
+            System.out.println("Vertex " + vertexNameB + " does not exist!!!");
+        }
+        else{
+            for(int i=0; i<vertexArray.length; i++){
+                if(vertexArray[i].name.equals(vertexNameA)){
+                    posA = i;
+                }
+                if(vertexArray[i].name.equals(vertexNameB)){
+                    posB = i;
+                }
+            }
+        }
+        return matrix[posA][posB];
+    }
+
+    public Vertex getVertex(String vertexName) {
+        return vertexArray[findPos(vertexName)];
+    }
+    public float getVertexWeight(String vertexName) {
+        return vertexArray[findPos(vertexName)].weight;
+    }
+
     public Vertex[] getVertexArray() {
         return vertexArray;
     }
 
-    public double[][] getMatrix() {
+    public String[] getVertexNames() {
+        String[] vertexNames = new String[vertexArray.length];
+        for (int i=0; i<vertexArray.length; i++) {
+            vertexNames[i] = vertexArray[i].name;
+        }
+        return vertexNames;
+    }
+
+    public float[][] getMatrix() {
         return matrix;
     }
 
@@ -217,7 +288,53 @@ public class Graph {
         return status;
     }
 
-    public void dislay() {
+    public int findPos (String vertexName) {
+        int pos = -1;
+        for (int i=0; i<vertexArray.length; i++) {
+            if (vertexName.equals(vertexArray[i].name)){
+                pos = i;
+            }
+        }
+        return pos;
+    }
+
+    public void setGCost(String vertexName, float g) {
+        int pos = findPos(vertexName);
+        vertexArray[pos].gCost = g;
+        updateFCost(vertexName);
+    }
+    public float getGCost(String vertexName) {
+        int pos = findPos(vertexName);
+        return vertexArray[pos].gCost;
+    }
+    public void setHCost(String vertexName, float h) {
+        vertexArray[findPos(vertexName)].hCost = h;
+    }
+    public float getHCost(String vertexName) {
+        int pos = findPos(vertexName);
+        return vertexArray[pos].hCost;
+    }
+    public void updateFCost(String vertexName) {
+        int pos = findPos(vertexName);
+        vertexArray[pos].fCost = vertexArray[pos].gCost + vertexArray[pos].hCost;
+    }
+    public float getFCost(String vertexName) {
+        float fCost = vertexArray[findPos(vertexName)].gCost + vertexArray[findPos(vertexName)].hCost;
+        return fCost;
+    }
+    public void setParent(String vertexName, String parentName){
+        int vertexPos = findPos(vertexName);
+        int parentPos = findPos(parentName);
+        vertexArray[vertexPos].parent = vertexArray[parentPos];
+    }
+    public void setVisited(String vertexName, boolean status) {
+        vertexArray[findPos(vertexName)].visited = status;
+    }
+    public boolean visited(String vertexName) {
+        return vertexArray[findPos(vertexName)].visited;
+    }
+
+    public void display() {
         System.out.println("\nVERTICES: ");
         for(int i=0; i<vertexArray.length; i++){
             System.out.print("[" + vertexArray[i].name + ":" + vertexArray[i].weight + "] ");

@@ -15,13 +15,14 @@ public class MainFrame{
     private AlgoPanel algoPanel;
     private TablePanel tablePanel;
     private GraphPanel graphPanel;
-    // private ControlPanel controlPanel;
-    private JButton fileInput, rndInput, start, pause, reset, result, exit;
+    private JButton fileInput, startButton, exit;
     private JSlider slider;
-
+    private JLabel startLabel, destinationLabel;
+    private JTextField startInput, destinationInput;
     private File inputFile;
-    private int sliderSpeed;
+    private int animationSpeed = 50;
     private Graph graph;
+    private AStarSolver solver;
 
     public MainFrame() {
         System.out.println("START");
@@ -46,24 +47,24 @@ public class MainFrame{
 
         JLabel input = new JLabel("SELECT INPUT:");
         fileInput = new JButton("SELECT FILE");
-        rndInput = new JButton("RANDOM INPUT");
         JLabel speed = new JLabel("ANIMATION SPEED:");
         slider = new JSlider();
-        start = new JButton("START");
-        pause = new JButton("PAUSE");
-        reset = new JButton("RESET");
-        result = new JButton("RESULT");
+        startButton = new JButton("START");
+        startLabel = new JLabel("Starting Vertex");
+        destinationLabel = new JLabel("Destination Vertex");
+        startInput = new JTextField();
+        destinationInput = new JTextField();
         exit = new JButton("EXIT");
 
         input.setBounds(1125,75,150,25);
         fileInput.setBounds(1140,110,170,30);
-        rndInput.setBounds(1140,150,170,30);
         speed.setBounds(1125,300,150,25);
         slider.setBounds(1140,325,170,40);
-        start.setBounds(1140, 450, 80, 50);
-        pause.setBounds(1230, 450, 80, 50);
-        reset.setBounds(1140, 510, 170,40);
-        result.setBounds(1140,575, 170, 50);
+        startLabel.setBounds(1140,375,170,25);
+        startInput.setBounds(1140,400,170,25);
+        destinationLabel.setBounds(1140,435,170,25);
+        destinationInput.setBounds(1140,460,170,25);
+        startButton.setBounds(1140, 510, 170,50);
         exit.setBounds(1140,675, 170, 30);
         
         frame.add(algoPanel);
@@ -71,19 +72,17 @@ public class MainFrame{
         frame.add(graphPanel);
         frame.add(input);
         frame.add(fileInput);
-        frame.add(rndInput);
         frame.add(speed);
         frame.add(slider);
-        frame.add(start);
-        frame.add(pause);
-        frame.add(reset);
-        frame.add(result);
+        frame.add(startLabel);
+        frame.add(startInput);
+        frame.add(destinationLabel);
+        frame.add(destinationInput);
+        frame.add(startButton);
         frame.add(exit);
 
         frame.setVisible(true);
 
-        componentEnabler(true, true, false, false, false, false, false);
-        
         System.out.println("Instantiation Done");
 
         ActionListener actionListener = new ActionListener() {
@@ -99,8 +98,6 @@ public class MainFrame{
                     if (response == JFileChooser.APPROVE_OPTION) {
                         inputFile = fileChooser.getSelectedFile();
 
-                        componentEnabler(true, true, true, true, false, false, false);
-
                         System.out.println("Selected File is: " + inputFile.getName());
 
                         GraphReader graphReader = new GraphReader(inputFile);
@@ -112,39 +109,25 @@ public class MainFrame{
                         System.out.println("Contents set for Table and Graph");
                     } 
                 }
-
-                if (e.getSource() == rndInput){
-                    System.out.println("Generate Random");
-
-                    componentEnabler(true, true, true, true, false, false, false);
-
-                    RandomGraphGenerator randomGraphGenerator = new RandomGraphGenerator();
-                    graph = randomGraphGenerator.generate();
-
-                    System.out.println("Random Graph Generated!");
-
-                    tablePanel.setContent(graph);
-                    graphPanel.setContent(graph);
-
-                    System.out.println("Contents set for Table and Graph");
-                }
                 
-                if (e.getSource() == start){
+                if (e.getSource() == startButton){
                     System.out.println("Start Pressed");
-                    
-                    componentEnabler(true, true, true, true, true, true, false);
-                }
 
-                if (e.getSource() == pause){
-                    System.out.println("Pause Pressed");
-                }
+                    String startVertex = startInput.getText();
+                    String destinationVertex = destinationInput.getText();
 
-                if (e.getSource() == reset){
-                    System.out.println("Reset Pressed");
-                }
+                    graphPanel.setStartVertex(startVertex);
+                    graphPanel.setDestVertex(destinationVertex);
 
-                if (e.getSource() == result){
-                    System.out.println("Result Pressed");
+                    tablePanel.setHeuristic(graphPanel.getEuclidean());
+
+                    //instantiate solver with graph input
+                    //set heuristics for solver
+                    //instantiate thread class
+                    //start thread
+
+                    solver = new AStarSolver(graph, startVertex, destinationVertex);
+                    solver.setHCost(graphPanel.getEuclidean());
                 }
 
                 if (e.getSource() == exit){
@@ -157,32 +140,34 @@ public class MainFrame{
         ChangeListener changeListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e){                
-                sliderSpeed = slider.getValue();
+                animationSpeed = animationSpeed * slider.getValue();
 
-                System.out.println(sliderSpeed);
+                System.out.println(slider.getValue());
             }
         };
 
         fileInput.addActionListener(actionListener);
-        rndInput.addActionListener(actionListener);
-        start.addActionListener(actionListener);
-        pause.addActionListener(actionListener);
-        reset.addActionListener(actionListener);
-        result.addActionListener(actionListener);
+        startButton.addActionListener(actionListener);
         exit.addActionListener(actionListener);
-
         slider.addChangeListener(changeListener);
     }
 
-    private void componentEnabler(  boolean fileInputStatus, boolean rndInputStatus, boolean sliderStatus, boolean startStatus, 
-                                    boolean pauseStatus, boolean resetStatus, boolean resultStatus) {
-        fileInput.setEnabled(fileInputStatus);
-        rndInput.setEnabled(rndInputStatus);
-        slider.setEnabled(sliderStatus);
-        start.setEnabled(startStatus);
-        pause.setEnabled(pauseStatus);
-        reset.setEnabled(resetStatus);
-        result.setEnabled(resultStatus);
+    public void step() {
+
+    }
+
+    public class AnimatorThread implements Runnable {
+        public AnimatorThread() {
+
+        }
+        
+        @Override
+        public void run() {
+            //while solver is not done
+                //frame.step()
+                //frame.repaint()
+                //thread.sleep(animationSpeed)
+        }
     }
 
     public static void main (String [] args) {
