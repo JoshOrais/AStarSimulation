@@ -19,10 +19,10 @@ public class MainFrame{
     private JSlider slider;
     private JLabel startLabel, destinationLabel;
     private JTextField startInput, destinationInput;
-    private File inputFile;
-    private int animationSpeed = 50;
+    private int sliderValue;
     private Graph graph;
     private AStarSolver solver;
+    private Thread thread;
 
     public MainFrame() {
         System.out.println("START");
@@ -49,6 +49,7 @@ public class MainFrame{
         fileInput = new JButton("SELECT FILE");
         JLabel speed = new JLabel("ANIMATION SPEED:");
         slider = new JSlider();
+        slider.setValue(0);
         startButton = new JButton("START");
         startLabel = new JLabel("Starting Vertex");
         destinationLabel = new JLabel("Destination Vertex");
@@ -96,13 +97,15 @@ public class MainFrame{
                     int response = fileChooser.showOpenDialog(null);
 
                     if (response == JFileChooser.APPROVE_OPTION) {
-                        inputFile = fileChooser.getSelectedFile();
+                        File inputFile = fileChooser.getSelectedFile();
 
                         System.out.println("Selected File is: " + inputFile.getName());
 
                         GraphReader graphReader = new GraphReader(inputFile);
                         graph = graphReader.getGraph();
 
+                        algoPanel.setDefault();
+                        tablePanel.setDefaultValues();
                         tablePanel.setContent(graph);
                         graphPanel.setContent(graph);
 
@@ -119,15 +122,22 @@ public class MainFrame{
                     graphPanel.setStartVertex(startVertex);
                     graphPanel.setDestVertex(destinationVertex);
 
-                    tablePanel.setHeuristic(graphPanel.getEuclidean());
-
-                    //instantiate solver with graph input
-                    //set heuristics for solver
-                    //instantiate thread class
-                    //start thread
+                    graph.setDefaultValues();
+                    tablePanel.setDefaultValues();
+                    algoPanel.setDefault();
 
                     solver = new AStarSolver(graph, startVertex, destinationVertex);
                     solver.setHCost(graphPanel.getEuclidean());
+
+                    tablePanel.setHeuristic(graphPanel.getEuclidean());
+                    tablePanel.setGCost(startVertex, 0);
+                    tablePanel.setFCost(startVertex, 0, solver.getHCost(startVertex));
+
+                    thread = new Thread(new AnimatorThread(MainFrame.this));
+                    thread.start();
+
+                    //test
+                    System.out.println("Start Solver Algo");
                 }
 
                 if (e.getSource() == exit){
@@ -140,9 +150,7 @@ public class MainFrame{
         ChangeListener changeListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e){                
-                animationSpeed = animationSpeed * slider.getValue();
-
-                System.out.println(slider.getValue());
+                sliderValue = slider.getValue();
             }
         };
 
@@ -153,20 +161,67 @@ public class MainFrame{
     }
 
     public void step() {
+        int currentStep = solver.getStep();
 
+        //test
+        System.out.println("Step status: " + currentStep);
+        //
+        
+        solver.step();
+        graphPanel.highlightNodes(solver.getHighlighted());
+        graphPanel.path(solver.getCurrentPath());
+
+        tablePanel.updateRow(solver.getCurrentVertex());
+
+        algoPanel.updateQueue(solver.getQueue());
+        algoPanel.updatePath(solver.getCurrentPath());
+
+        if (currentStep== 1) {
+            algoPanel.setDequeued(solver.getDequeued());
+        }
+        else if (currentStep == 2) {
+            algoPanel.setNeighbors(solver.getNeighbors());
+        }
+        else if (currentStep == 3) {
+            
+        }
+        else if (currentStep == 4) {
+            algoPanel.reset();
+        }
+
+        if (solver.done) {
+            algoPanel.setDone(solver.getPathWeight());
+        }
     }
 
     public class AnimatorThread implements Runnable {
-        public AnimatorThread() {
+        MainFrame mainFrame;
 
+        public AnimatorThread(MainFrame frame) {
+            mainFrame = frame;
         }
         
         @Override
         public void run() {
-            //while solver is not done
-                //frame.step()
-                //frame.repaint()
-                //thread.sleep(animationSpeed)
+            while (!mainFrame.solver.done) {
+                try {
+                    mainFrame.step();
+                    frame.repaint();
+                    int delay = 1000 - (sliderValue*10);
+                    Thread.sleep(delay);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //test
+            String[] path = mainFrame.solver.getCurrentPath();
+            System.out.print("Path: ");
+            for(String str : path) {
+                System.out.print(str + " ");
+            }
+            System.out.println();
         }
     }
 

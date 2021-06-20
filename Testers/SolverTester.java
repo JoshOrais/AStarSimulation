@@ -17,14 +17,14 @@ public class SolverTester {
         String dest = scan.next();
 
         AStarSolver solver = new AStarSolver(graph, start, dest);
-        // solver.setHCost();
-        // solver.start();
+        solver.setHCost();
 
         while (!solver.done) {
             solver.step();
         }
 
-        ArrayList<String> path = solver.getPath();
+        // ArrayList<String> path = solver.getPath();
+        String[] path = solver.getCurrentPath();
         float pathWeight = solver.getPathWeight();
 
         System.out.println("Path weight: " + pathWeight);

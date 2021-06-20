@@ -8,7 +8,6 @@ public class Vertex {
     public float hCost;
     public float fCost;
     public Vertex parent;
-
     public boolean visited;
 
     public Vertex(String vertexName, float vertexWeight) {

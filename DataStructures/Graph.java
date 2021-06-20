@@ -324,8 +324,14 @@ public class Graph {
     }
     public void setParent(String vertexName, String parentName){
         int vertexPos = findPos(vertexName);
-        int parentPos = findPos(parentName);
-        vertexArray[vertexPos].parent = vertexArray[parentPos];
+        if (parentName != null) {
+            int parentPos = findPos(parentName);
+            vertexArray[vertexPos].parent = vertexArray[parentPos];
+        }
+        else {
+            vertexArray[vertexPos].parent = null;
+        }
+        
     }
     public void setVisited(String vertexName, boolean status) {
         vertexArray[findPos(vertexName)].visited = status;
@@ -354,5 +360,16 @@ public class Graph {
             System.out.println();
         }
         System.out.println("");
+    }
+
+    
+    public void setDefaultValues() {
+        for (int i=0; i<vertexNum; i++) {
+            vertexArray[i].gCost = 0;
+            vertexArray[i].hCost = 0;
+            vertexArray[i].fCost = 0;
+            vertexArray[i].parent = null;
+            vertexArray[i].visited = false;
+        }
     }
 }

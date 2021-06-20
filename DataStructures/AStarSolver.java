@@ -15,6 +15,7 @@ public class AStarSolver {
     private String[] neighbors;
     private int neighborsCounter;
     private String[] highlighted;
+    private Vertex currentVertex;
 
 
     public AStarSolver(Graph g, String s, String e) {
@@ -42,58 +43,12 @@ public class AStarSolver {
         }
     }
 
-    //TEST METHOD
-    // public void setHCost() {
-    //     for (int i=0; i<size; i++) {
-    //         graph.setHCost(vertexNames[i], 0);
-    //     }
-    // }
-
-    // public void start() {
-
-    //     while (done == false) {
-
-    //         String topVertex = openList.dequeue();
-    //         String[] neighbors = graph.getAdjacentVertices(topVertex);
-
-    //         for (int i=0; i<neighbors.length; i++) {
-
-    //             float parentGCost = graph.getGCost(topVertex);
-    //             float edgeWeight = graph.getEdgeWeight(topVertex, neighbors[i]);
-    //             float vertexWeight = graph.getVertexWeight(neighbors[i]);
-    //             float updatedGCost = parentGCost + edgeWeight + vertexWeight;
-
-    //             if (neighbors[i].equals(end)) {
-    //                 graph.setGCost(neighbors[i], updatedGCost);
-    //                 graph.setParent(neighbors[i], topVertex);
-
-    //                 done = true;
-    //                 break;
-    //             }
-
-    //             else {
-    //                 if (!graph.visited(neighbors[i])) {
-    //                     graph.setGCost(neighbors[i], updatedGCost);
-    //                     graph.setParent(neighbors[i], topVertex);
-                        
-    //                     openList.enqueue(neighbors[i], graph.getFCost(neighbors[i]));
-    //                 }
-    //                 else {
-    //                     float existingF = graph.getFCost(neighbors[i]);
-    //                     float newF = graph.getHCost(neighbors[i]) + updatedGCost;
-    //                     if (newF < existingF) {
-    //                         graph.setGCost(neighbors[i], updatedGCost);
-    //                         graph.setParent(neighbors[i], topVertex);
-                            
-    //                         openList.enqueue(neighbors[i], graph.getFCost(neighbors[i]));
-    //                     }
-    //                 } 
-    //             }
-    //         }
-
-    //         graph.setVisited(topVertex, true);
-    //     }
-    // }
+    // TEST METHOD
+    public void setHCost() {
+        for (int i=0; i<size; i++) {
+            graph.setHCost(vertexNames[i], 0);
+        }
+    }
 
     public void step() {
         //values for stepStatus
@@ -105,19 +60,36 @@ public class AStarSolver {
         if (stepStatus == 1) {
             dequeued = openList.dequeue();
             highlighted = new String[] {dequeued};
+            currentVertex = null;
             stepStatus = 2;
+
+            //test
+            System.out.println("Dequeued: " + dequeued);
+            //
         }
 
-        if (stepStatus == 2) {
+        else if (stepStatus == 2) {
             neighbors = graph.getAdjacentVertices(dequeued);
             highlighted = neighbors;
             neighborsCounter = 0;
+            currentVertex = null;
             stepStatus = 3;
+
+            //test
+            System.out.print("Neighbors: ");
+            for(String str : neighbors) {
+                System.out.print(str + " ");
+            }
+            System.out.println();
+            //
         }
 
-        if (stepStatus == 3) {
+        else if (stepStatus == 3) {
             if (neighborsCounter < neighbors.length) {
                 int i = neighborsCounter;
+
+                //test
+                System.out.println("Neighbor " + i + ": " + neighbors[i]);
 
                 float parentGCost = graph.getGCost(dequeued);
                 float edgeWeight = graph.getEdgeWeight(dequeued, neighbors[i]);
@@ -128,6 +100,9 @@ public class AStarSolver {
                     graph.setGCost(neighbors[i], updatedGCost);
                     graph.setParent(neighbors[i], dequeued);
                     done = true;
+
+                    //test
+                    System.out.println("SOLVER DONE!!!");
                 }
 
                 else {
@@ -151,11 +126,13 @@ public class AStarSolver {
 
                 neighborsCounter++;
                 highlighted = new String[]{neighbors[i]};
+                currentVertex = graph.getVertex(neighbors[i]);
                 stepStatus = 3;
             }
             
             else {
                 highlighted = null;
+                currentVertex = null;
                 stepStatus = 4;
             }
         }
@@ -163,20 +140,37 @@ public class AStarSolver {
         if (stepStatus == 4) {
             graph.setVisited(dequeued, true);
             highlighted = null;
+            currentVertex = null;
             stepStatus = 1;
         }
     }
 
-    public ArrayList<String> getPath() {
-        ArrayList<String> path = new ArrayList<String>();
-        Vertex vertex = graph.getVertex(end);
+    public String getDequeued() {
+        return dequeued;
+    }
+    public String[] getNeighbors() {
+        return neighbors;
+    }
 
-        path.add(end);
-        while (!vertex.parent.name.equals(start)) {
-            path.add(vertex.parent.name);
-            vertex = vertex.parent;
+    public String[] getCurrentPath() {
+        ArrayList<String> path = new ArrayList<String>();
+        Vertex vertex = graph.getVertex(dequeued);
+
+        if (vertex.parent == null) {
+            path.add(vertex.name);
         }
-        path.add(vertex.parent.name);
+        else {
+            if (done) {
+                path.add(end);
+            }
+
+            path.add(dequeued);
+            while (!vertex.parent.name.equals(start)) {
+                path.add(vertex.parent.name);
+                vertex = vertex.parent;
+            }
+            path.add(vertex.parent.name);
+        }
 
         ArrayList<String> reverse = new ArrayList<String>();
 
@@ -184,7 +178,9 @@ public class AStarSolver {
             reverse.add(path.get(i));
         }
 
-        return reverse;
+        String[] pathArr = reverse.toArray(new String[reverse.size()]);
+
+        return pathArr;
     }
 
     public float getPathWeight() {
@@ -194,4 +190,27 @@ public class AStarSolver {
     public String[] getHighlighted() {
         return highlighted;
     }
+
+    public Vertex getCurrentVertex() {
+        return currentVertex;
+    }
+
+    public String[] getQueue() {
+        return openList.getVertices();
+    }
+
+    public int getStep() {
+        return stepStatus;
+    }
+
+    public float getGCost(String name) {
+        return graph.getGCost(name);
+    }
+    public float getHCost(String name) {
+        return graph.getHCost(name);
+    }
+    public float getFCost(String name) {
+        return graph.getFCost(name);
+    }
+
 }

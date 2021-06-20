@@ -17,12 +17,14 @@ public class TablePanel extends JPanel {
     private TableModel tableModel;
     private JTable table;
     private JScrollPane scrollPane;
+    private Graph graph;
+    private int size;
 
     public TablePanel(Dimension dimension) {
         this.setSize(dimension);
-        this.setBackground(Color.green);
+        this.setBackground(Color.black);
         this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         tableModel = new DefaultTableModel(content, header);
         table = new JTable(tableModel);
@@ -31,35 +33,68 @@ public class TablePanel extends JPanel {
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void setContent(Graph graph) {
-        Vertex[] vertexArray = graph.getVertexArray();
-        //find heuristic
-
+    public void setContent(Graph g) {
+        graph = g;
+        size = g.getVertexNum();
+        
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         String[] rowData = new String[5];
 
-        for (int i=0; i<vertexArray.length; i++) {
-            rowData[0] = vertexArray[i].name;
-            rowData[1] = "infinity";
+        String[] vertexNames = graph.getVertexNames();
+        for (int i=0; i<size; i++) {
+            rowData[0] = vertexNames[i];
+            rowData[1] = "-";
             rowData[2] = "-";
-            rowData[3] = "infinity";
+            rowData[3] = "-";
             rowData[4] = "-";
             model.addRow(rowData);
+        }
+
+        setDefaultValues();
+    }
+
+    public void setDefaultValues() {
+        for (int i=0; i<size; i++) {
+            table.setValueAt("infinity", i, 1);
+            table.setValueAt("infinity", i, 3);
         }
     }
 
     public void setHeuristic(float[] heuristic) {
-        for (int i=0; i<table.getRowCount(); i++) {
-            // System.out.println(i + " " + table.getRowCount());
+        for (int i=0; i<size; i++) {
             table.setValueAt(String.valueOf(heuristic[i]), i, 2);
         }
     }
-
-    public void updatePanel() {
-        table.setValueAt("hello", 2, 3);
+    public void setGCost(String name, float g) {
+        int pos = graph.findPos(name);
+        table.setValueAt(String.valueOf(g), pos, 1);
+    }
+    public void setFCost (String name, float g, float h) {
+        int pos = graph.findPos(name);
+        float fValue = g + h;
+        table.setValueAt(String.valueOf(fValue), pos, 3);
+    }
+    public void setParent (String name, String parent) {
+        int pos = graph.findPos(name);
+        table.setValueAt(parent, pos, 4);
     }
 
-    public void clearPanel() {
-        
+    public void updateRow (Vertex vertex) {
+        if (vertex != null) {
+            int pos = graph.findPos(vertex.name);
+            float g = vertex.gCost;
+            float f = vertex.fCost;
+            String parentName;
+            if (vertex.parent == null) {
+                parentName = null;
+            }
+            else {
+                parentName = vertex.parent.name;
+            }
+
+            table.setValueAt(String.valueOf(g), pos, 1);
+            table.setValueAt(String.valueOf(f), pos, 3);
+            table.setValueAt(String.valueOf(parentName), pos, 4);
+        } 
     }
 }

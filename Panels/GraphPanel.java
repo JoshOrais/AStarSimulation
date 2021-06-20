@@ -26,12 +26,12 @@ public class GraphPanel extends JPanel {
 	public static final double DIST = 60.f;
 	public static final int MAX_ITERATIONS = 10000;
 	public static final float PADDINGPERCENT = 0.05f;
-	public static final int CIRCLE_SIZE = 30;
-	public static final Color CIRCLE_COLOR = Color.green;
+	public static final int CIRCLE_SIZE = 40;
+	public static final Color CIRCLE_COLOR = Color.white;
 	public static final Color LINE_COLOR = Color.black;
 	public static final Color HIGHLIGHT_COLOR = Color.red;
-	public static final Color HIGHLIGHT_CIRCLE_COLOR = Color.yellow;
-	public static final Color HIGHLIGHT_CIRCLE_COLOR2 = Color.blue;
+	public static final Color HIGHLIGHT_CIRCLE_COLOR = Color.red;
+	public static final Color HIGHLIGHT_CIRCLE_COLOR2 = Color.yellow;
 	public static final Font FONT = new Font("calibri", Font.BOLD, CIRCLE_SIZE / 2);
 
     public GraphPanel(Dimension dimension) {
@@ -227,11 +227,11 @@ public class GraphPanel extends JPanel {
 			String d = "total cost: " + df.format(totalCost);
 			int w2 = fm.stringWidth(d);
 			g.setColor(Color.black);
-			g.fillRect(0, height - CIRCLE_SIZE / 2 - 2, w + 5, CIRCLE_SIZE / 2 + 2);
-			g.fillRect(0, height - CIRCLE_SIZE - 2, w2 + 5, CIRCLE_SIZE / 2 + 2);
+			// g.fillRect(0, height - CIRCLE_SIZE / 2 - 2, w + 5, CIRCLE_SIZE / 2 + 2);
+			// g.fillRect(0, height - CIRCLE_SIZE - 2, w2 + 5, CIRCLE_SIZE / 2 + 2);
 			g.setColor(Color.white);
-			g.drawString(pathString, 0, height - 2);
-			g.drawString(d, 0, height - CIRCLE_SIZE / 2 - 2);
+			// g.drawString(pathString, 0, height - 2);
+			// g.drawString(d, 0, height - CIRCLE_SIZE / 2 - 2);
 		}
 	}	
 	
